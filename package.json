@@ -1,14 +1,14 @@
 {
-  "name": "@daviddarnes/component-name",
-  "version": "1.0.0",
-  "description": "A Web Component for…",
+  "name": "@g12n/scroll-button",
+  "version": "0.0.1",
+  "description": "A Web Component for controlling the scrolling of a scroll container.",
   "main": "component-name.js",
   "scripts": {
     "start": "npx http-server ."
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/daviddarnes/component-name.git"
+    "url": "git+https://github.com/g12n/scroll-button.git"
   },
   "keywords": [
     "web",
@@ -22,12 +22,11 @@
     "access": "public"
   },
   "bugs": {
-    "url": "https://github.com/daviddarnes/component-name/issues"
+    "url": "https://github.com/g12n/scroll-button/issues"
   },
   "author": {
-    "name": "David Darnes",
-    "email": "me@daviddarnes.com",
-    "url": "https://darn.es/"
+    "name": "Michael Gehrman",
+    "url": "https://gehrmann-design.de"
   },
-  "homepage": "https://github.com/daviddarnes/component-name#readme"
+  "homepage": "https://github.com/g12n/scroll-button#readme"
 }

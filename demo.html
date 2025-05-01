@@ -10,27 +10,42 @@
   </head>
   <body>
     <h2>General usage example</h2>
-    <component-name>
-      <button>Button</button>
-    </component-name>
-    <hr />
-    <h2>Example using a fallback method</h2>
-    <component-name>
-      <button>Button</button>
-      <a href="#">Anchor</a>
-    </component-name>
+   <script type="module" src="scroll-button.js"></script>
+
+  <ul class="cards" id="cards">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+  </ul>
+
+<scroll-button for="cards" direction="left"></scroll-button>
+
     <style>
-      component-name:not(:defined) button,
-      component-name:defined a {
-        display: none;
+      body{margin: 0;}
+      .cards{
+        display: grid;
+        grid-auto-flow: column;
+        overflow-x: scroll;
+        gap: 10px; 
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        scroll-snap-type: x mandatory;
       }
-    </style>
-    <hr />
-    <h2>Example using options or additional fallback method</h2>
-    <component-name attribute="value">
-      <button>Button</button>
-    </component-name>
-    <style>
+      .cards>li{
+        width: 60vw;
+        height: 40vw;
+        scroll-snap-align: center;
+        background-color: #f69;
+        border-radius: 1em;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 2em;
+      }
       component-name[attribute="value"] {
         outline: 1px solid red;
       }
