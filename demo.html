@@ -24,6 +24,37 @@
 <scroll-button for="cards" direction="left"></scroll-button>
 <scroll-button for="cards" direction="right"></scroll-button>
 
+<h2> ::scroll-button for comparison</h2>
+<ul class="cards" id="cards2">
+  <li>1</li>
+  <li>2</li>
+  <li>3</li>
+  <li>4</li>
+  <li>5</li>
+  <li>6</li>
+</ul>
+
+<style>
+   #cards2{
+    scroll-behavior: smooth;
+   }
+  #cards2::scroll-button(*) {
+  border: 0;
+  font-size: 2rem;
+  background: none;
+  color: rgb(0 0 0 / 0.7);
+  cursor: pointer;
+  
+}
+
+#cards2::scroll-button(left) {
+  content: "←";
+}
+#cards2::scroll-button(right) {
+  content: "→";
+}
+</style>
+
     <style>
       body{margin: 0;}
       .cards{

@@ -13,7 +13,7 @@ class ScrollButton extends HTMLElement {
 
       if (!container) return;
 
-      const scrollAmount = container.clientWidth;
+      const scrollAmount = container.clientWidth * 0.85;
 
       container.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
