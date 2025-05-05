@@ -2,8 +2,7 @@
 
 A Web Component that mimics the proposed [`::scroll-button`](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-button) CSS pseudo-element. It provides a native-feeling scroll control UI to bridge the gap until browser support is more widespread.
 
-[**Demo**](https://github.com/g12n/scroll-button#readme) | [**Further reading**](https://gehrmann-design.de)
-
+[**Demo**](https://g12n.github.io/scroll-button/demo.html) 
 
 ## Examples
 
@@ -31,42 +30,10 @@ This Web Component allows you to:
 
 ## Installation
 
-You have a few options (choose one of these):
+This Project is still under development. 
+You are free to clone it for test purposes and committing ideas.
+But for the moment it's not fit for the big stage.
 
-1. Install via [npm](https://www.npmjs.com/package/@g12n/scroll-button):
-
-```bash
-npm install @g12n/scroll-button
-```
-
-2. [Download the source manually from GitHub](https://github.com/g12n/scroll-button/releases) into your project.
-
-3. Use the script directly via a 3rd party CDN (not recommended for production use)
-
-### Usage
-
-Make sure you include the `<script>` in your project (choose one of these):
-
-```html
-<!-- Host yourself -->
-<script type="module" src="scroll-button.js"></script>
-```
-
-```html
-<!-- 3rd party CDN, not recommended for production use -->
-<script
-  type="module"
-  src="https://www.unpkg.com/@g12n/scroll-button@0.0.1/scroll-button.js"
-></script>
-```
-
-```html
-<!-- 3rd party CDN, not recommended for production use -->
-<script
-  type="module"
-  src="https://esm.sh/@g12n/scroll-button@0.0.1"
-></script>
-```
 
 ## Credit
 
