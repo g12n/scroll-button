@@ -1,0 +1,38 @@
+:root{
+    --card-radius: 1em;
+    --card-fill: #112233;
+    --card-text: #ffffff;
+}
+.cards {
+  --gap: 1rem;
+  list-style: none;
+  padding: 1rem;
+
+  --min: 15ch;
+  --gap: 1rem;
+  display: grid;
+  grid-gap: var(--gap);
+  /* min() with 100% prevents overflow
+  in extra narrow spaces */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min)), 1fr));
+  
+}
+
+.cards > li{
+    background-color: var(--card-fill);
+    color: var(--card-text);
+    padding:  var(--card-radius); 
+    border-radius: var( --card-radius);
+}
+
+@media screen and (max-width: 420px) {
+    .responsive{
+        grid-auto-flow: column;
+        overflow-x: auto;
+         grid-template-columns:unset;
+         &>*{
+            min-width: 60vw;
+         }
+    }
+}
+
