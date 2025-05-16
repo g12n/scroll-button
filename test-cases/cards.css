@@ -17,6 +17,15 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min)), 1fr));
   
 }
+ 
+.horizontal{
+    grid-auto-flow: column;
+    overflow-x: auto;
+    grid-template-columns:unset;
+    &>*{
+            min-width: 60vw;
+    }
+}
 
 .cards > li{
     background-color: var(--card-fill);
@@ -25,14 +34,14 @@
     border-radius: var( --card-radius);
 }
 
-@media screen and (max-width: 420px) {
-    .responsive{
+@media screen and (max-width: 620px) {
+.responsive{
         grid-auto-flow: column;
-        overflow-x: auto;
-         grid-template-columns:unset;
-         &>*{
+    overflow-x: auto;
+    grid-template-columns:unset;
+    &>*{
             min-width: 60vw;
-         }
     }
+}
 }
 
