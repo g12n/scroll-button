@@ -6,6 +6,9 @@
         <title>Document</title>
         <link rel="stylesheet" href="base.css">
         <link rel="stylesheet" href="cards.css">
+        <link rel="stylesheet" href="scroll-buttons.css">
+        <script type="module" src="../scroll-button.js"></script>
+
     </head>
     <body>
         <h1>Watchning for Horizontal scroll</h1>
@@ -26,8 +29,13 @@
             <li>6</li>
         </ul>
 
+        <scroll-button for="cards" direction="left">prev</scroll-button>
+<scroll-button for="cards" direction="right">next</scroll-button>
+
+
+
         <h2>Scroll only on small devices</h2>
-        <ul class="cards responsive" id="cards">
+        <ul class="cards responsive" id="cards-2">
             <li>1</li>
             <li>2</li>
             <li>3</li>
@@ -35,9 +43,19 @@
             <li>5</li>
             <li>6</li>
         </ul>
+
+        <scroll-button for="cards-2" direction="left">prev</scroll-button>
+<scroll-button for="cards-2" direction="right">next</scroll-button>
+
+
         <h2>to little to scroll</h2>
-        <ul class="cards horizontal" id="cards">
+        <ul class="cards horizontal" id="cards-3">
             <li>1</li>
         </ul>
+
+        <scroll-button for="cards-3" direction="left">prev</scroll-button>
+<scroll-button for="cards-3" direction="right">next</scroll-button>
+
+
     </body>
 </html>
