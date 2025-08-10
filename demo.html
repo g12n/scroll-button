@@ -21,8 +21,8 @@
     <li>6</li>
   </ul>
 
-<scroll-button for="cards" direction="left"></scroll-button>
-<scroll-button for="cards" direction="right"></scroll-button>
+<scroll-button for="cards" direction="left">prev</scroll-button>
+<scroll-button for="cards" direction="right">next</scroll-button>
 
 <h2> ::scroll-button for comparison</h2>
 <ul class="cards" id="cards2">
@@ -81,6 +81,41 @@
       component-name[attribute="value"] {
         outline: 1px solid red;
       }
+
+      /* the element itself is the button; style directly */
+scroll-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+
+  padding: .4rem .6rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  cursor: pointer;
+  user-select: none;
+
+  /* nice focus ring */
+  outline: none;
+}
+scroll-button:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, CanvasText 40%, transparent);
+}
+scroll-button[disabled] {
+  opacity: .5;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* position examples */
+.scroller {
+  position: relative;
+  overflow: auto;
+  scroll-snap-type: x mandatory; /* optional: for snap carousels */
+  white-space: nowrap;
+}
+
     </style>
   </body>
 </html>
