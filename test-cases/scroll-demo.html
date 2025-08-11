@@ -6,13 +6,30 @@
     <meta name="description" content="Demo of component-name Web Component" />
     <title>component-name Web Component Demo</title>
 
-    <script type="module" src="scroll-button.js"></script>
+    <link rel="stylesheet" href="base.css">
+
+    <script type="module" src="../scroll-button.js"></script>
   </head>
   <body>
-    <h2>General usage example</h2>
 
-
+<section aria-labelledby="scoll-snap-with-buttons">
+  <h2 id="scoll-snap-with-buttons">Scoll-Snap with scroll-button components</h2>
   <ul class="cards" id="cards">
+      <li>1</li>
+      <li>2</li>
+      <li>3</li>
+      <li>4</li>
+      <li>5</li>
+      <li>6</li>
+  </ul>
+  <scroll-button for="cards" direction="left">previous</scroll-button>
+  <scroll-button for="cards" direction="right">next</scroll-button>
+</section>
+
+<section class="supports-scroll-button"  aria-labelledby="snap-css-scrollbutton">
+  <h2 id="snap-css-scrollbutton">Scoll-Snap with CSS ::scroll-button pseudo element</h2>
+
+  <ul class="cards css-scroll-button" id="cards2">
     <li>1</li>
     <li>2</li>
     <li>3</li>
@@ -20,19 +37,7 @@
     <li>5</li>
     <li>6</li>
   </ul>
-
-<scroll-button for="cards" direction="left">prev</scroll-button>
-<scroll-button for="cards" direction="right">next</scroll-button>
-
-<h2> ::scroll-button for comparison</h2>
-<ul class="cards" id="cards2">
-  <li>1</li>
-  <li>2</li>
-  <li>3</li>
-  <li>4</li>
-  <li>5</li>
-  <li>6</li>
-</ul>
+</section>
 
 <style>
    #cards2{

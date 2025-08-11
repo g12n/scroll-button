@@ -11,51 +11,54 @@
 
     </head>
     <body>
-        <h1>Watchning for Horizontal scroll</h1>
-        <p>
-            A series of expamples of styles and amount of
-            content determining weather a container has
-            overflowing content
 
+        <h1>Responsive Grids</h1>
+        <p>
+            This demo outlines the biggest challange for me for scroll-buttons as DOM elements. 
+            If and when an element overflows and thus 
+            might be in need of scroll-buttons and other scroll related UI 
+            elements is highly dependent on css layout, container and page dimensions as well
+            as actual content inside the potential scroll container. 
         </p>
 
-        <h2>Horizontal scrolling cards</h2>
-        <ul class="cards horizontal" id="cards">
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-            <li>5</li>
-            <li>6</li>
-        </ul>
-
-        <scroll-button for="cards" direction="left">prev</scroll-button>
-<scroll-button for="cards" direction="right">next</scroll-button>
-
-
-
-        <h2>Scroll only on small devices</h2>
-        <ul class="cards responsive" id="cards-2">
-            <li>1</li>
-            <li>2</li>
-            <li>3</li>
-            <li>4</li>
-            <li>5</li>
-            <li>6</li>
-        </ul>
-
-        <scroll-button for="cards-2" direction="left">prev</scroll-button>
-<scroll-button for="cards-2" direction="right">next</scroll-button>
-
-
-        <h2>to little to scroll</h2>
-        <ul class="cards horizontal" id="cards-3">
-            <li>1</li>
-        </ul>
-
-        <scroll-button for="cards-3" direction="left">prev</scroll-button>
-<scroll-button for="cards-3" direction="right">next</scroll-button>
-
+        <section aria-labelledby="horizontal-always">
+            <h2 id="horizontal-always">Always horizontal scrolling cards</h2>
+            <p>This Container should be scrolling horizontally on every device.</p>
+            <ul class="cards horizontal" id="cards">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+            </ul>
+            <scroll-button for="cards" direction="left">prev</scroll-button>
+            <scroll-button for="cards" direction="right">next</scroll-button>
+        </section>
+        <section aria-labelledby="scroll-on-small-devices">
+            <h2 id="scroll-on-small-devices">Scroll on small devices</h2>
+            <p>This container only becomes horizontaly scrolling on devices smaller than 620 px</p>
+            <ul class="cards responsive" id="cards-2">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+            </ul>
+            <scroll-button for="cards-2" direction="left">prev</scroll-button>
+            <scroll-button for="cards-2" direction="right">next</scroll-button>
+        </section>
+        
+        <section aria-labelledby="not-enough-content">
+            <h2 id="not-enough-content">Not enough content</h2>
+            <p>This never scrolls, because there are not enough items inside.</p>
+            <ul class="cards horizontal" id="cards-3">
+                <li>1</li>
+            </ul>
+            <scroll-button for="cards-3" direction="left">prev</scroll-button>
+            <scroll-button for="cards-3" direction="right">next</scroll-button>
+        </section>
 
     </body>
 </html>

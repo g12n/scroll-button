@@ -3,3 +3,12 @@ body{
     font-family: system-ui, sans-serif;
 }
 
+h1, h2, p{
+    margin: 0 1rem 0.5rem 1rem;
+}
+
+section{
+    margin-block: 2em;
+    padding-block: 2em;
+    border-block: 1px solid #345
+}

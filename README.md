@@ -2,7 +2,7 @@
 
 A Web Component that mimics the proposed [`::scroll-button`](https://developer.mozilla.org/en-US/docs/Web/CSS/::scroll-button) CSS pseudo-element. It provides a native-feeling scroll control UI to bridge the gap until browser support is more widespread.
 
-[**Demo**](https://g12n.github.io/scroll-button/demo.html) 
+[**Demo**](https://g12n.github.io/scroll-button/test-cases/demo.html) 
 
 ## Examples
 
