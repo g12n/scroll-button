@@ -22,8 +22,10 @@
     grid-auto-flow: column;
     overflow-x: auto;
     grid-template-columns:unset;
+    scroll-snap-type: x mandatory;
     &>*{
-            min-width: 60vw;
+            min-width: 30vw;
+            scroll-snap-align: center;
     }
 }
 

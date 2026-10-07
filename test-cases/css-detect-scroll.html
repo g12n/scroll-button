@@ -75,5 +75,270 @@
             }
         }
         </style>
+        
+        <script>
+    // scroll-invoker.js
+// Declarative, snap-aware paging for scroll containers via Invoker Commands:
+//
+//   <ul id="cards" class="cards">…</ul>
+//   <button commandfor="cards" command="--page-right">next</button>
+//
+// Commands: --page-left, --page-right, --page-up, --page-down,
+//           --page-inline-start, --page-inline-end,
+//           --page-block-start,  --page-block-end   (writing-mode / RTL aware)
+//
+// Browsers without CommandEvent get a click-based fallback.
+// Use ScrollInvoker.attach(shadowRoot) for non-composed events inside shadow roots.
+
+(() => {
+  "use strict";
+
+  const TOLERANCE = 1; // px – sub-pixel rounding, zoom, high-DPI
+  const PAGE_RATIO = 0.85; // paging distance when the container does not snap
+
+  const COMMANDS = {
+    "--page-left": { axis: "x", sign: -1 },
+    "--page-right": { axis: "x", sign: 1 },
+    "--page-up": { axis: "y", sign: -1 },
+    "--page-down": { axis: "y", sign: 1 },
+    "--page-inline-start": { logical: "inline", forward: false },
+    "--page-inline-end": { logical: "inline", forward: true },
+    "--page-block-start": { logical: "block", forward: false },
+    "--page-block-end": { logical: "block", forward: true },
+  };
+
+  // ---------- Layout (writing-mode / direction) ----------
+
+  // For each physical axis: which logical axis it is, and whether the logical
+  // start sits on the far side (right / bottom). startFar => scroll offsets
+  // run from -max to 0 instead of 0 to max.
+  function layoutOf(cs) {
+    const wm = cs.writingMode;
+    const rtl = cs.direction === "rtl";
+    const vertical = wm.startsWith("vertical") || wm.startsWith("sideways");
+
+    if (!vertical) {
+      return {
+        x: { logical: "inline", startFar: rtl },
+        y: { logical: "block", startFar: false },
+      };
+    }
+    return {
+      x: { logical: "block", startFar: wm === "vertical-rl" || wm === "sideways-rl" },
+      y: { logical: "inline", startFar: (wm === "sideways-lr") !== rtl },
+    };
+  }
+
+  // Resolve a command to a physical axis + sign (+1 = scroll offset increases).
+  function resolve(spec, layout) {
+    if (spec.axis) return { axis: spec.axis, sign: spec.sign };
+    const axis = layout.x.logical === spec.logical ? "x" : "y";
+    const { startFar } = layout[axis];
+    const sign = spec.forward ? (startFar ? -1 : 1) : startFar ? 1 : -1;
+    return { axis, sign };
+  }
+
+  function scrollRange(t, axis, layout) {
+    const max = Math.max(
+      0,
+      axis === "x" ? t.scrollWidth - t.clientWidth : t.scrollHeight - t.clientHeight
+    );
+    return layout[axis].startFar ? [-max, 0] : [0, max];
+  }
+
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+  // ---------- Snap helpers ----------
+
+  function snapsOn(cs, axis, layout) {
+    const [a] = cs.scrollSnapType.trim().split(/\s+/); // x | y | block | inline | both | none
+    if (!a || a === "none") return false;
+    if (a === "both") return true;
+    if (a === "x" || a === "y") return a === axis;
+    return a === layout[axis].logical; // block | inline
+  }
+
+  // scroll-snap-align is "<block> [<inline>]"
+  function alignFor(value, logical) {
+    const [block, inline = block] = value.trim().split(/\s+/);
+    return logical === "block" ? block : inline;
+  }
+
+  // Computed scroll-padding may stay a percentage or "auto".
+  function len(value, basis = 0) {
+    if (!value || value === "auto") return 0;
+    const n = parseFloat(value);
+    if (!Number.isFinite(n)) return 0;
+    return value.endsWith("%") ? (basis * n) / 100 : n;
+  }
+
+  // Scroll offsets that would snap each child, clamped to the reachable range.
+  function snapPositions(t, axis, layout, tcs) {
+    const x = axis === "x";
+    const info = layout[axis];
+    const size = x ? t.clientWidth : t.clientHeight;
+    const box = t.getBoundingClientRect();
+    const origin = x ? box.left + t.clientLeft : box.top + t.clientTop;
+
+    const portNear = origin + len(x ? tcs.scrollPaddingLeft : tcs.scrollPaddingTop, size);
+    const portFar = origin + size - len(x ? tcs.scrollPaddingRight : tcs.scrollPaddingBottom, size);
+
+    const current = x ? t.scrollLeft : t.scrollTop;
+    const [lo, hi] = scrollRange(t, axis, layout);
+    const out = [];
+
+    for (const el of t.children) {
+      const cs = getComputedStyle(el);
+      if (cs.display === "none") continue;
+
+      const align = alignFor(cs.scrollSnapAlign, info.logical);
+      if (align === "none") continue;
+
+      // getBoundingClientRect is relative to the viewport, so it does not
+      // depend on offsetParent and already accounts for RTL / writing modes.
+      const r = el.getBoundingClientRect();
+      const areaNear = (x ? r.left : r.top) - len(x ? cs.scrollMarginLeft : cs.scrollMarginTop);
+      const areaFar = (x ? r.right : r.bottom) + len(x ? cs.scrollMarginRight : cs.scrollMarginBottom);
+
+      let delta;
+      if (align === "center") {
+        delta = (areaNear + areaFar) / 2 - (portNear + portFar) / 2;
+      } else {
+        // logical start/end -> physical near/far edge
+        const far = (align === "start") === info.startFar;
+        delta = far ? areaFar - portFar : areaNear - portNear;
+      }
+      out.push(clamp(current + delta, lo, hi));
+    }
+    return out;
+  }
+
+  function nextSnap(points, now, sign, page, lo, hi) {
+    const ahead = points
+      .filter((p) => (sign > 0 ? p > now + TOLERANCE : p < now - TOLERANCE))
+      .sort((a, b) => a - b);
+
+    // No snap point left: go to the edge (trailing padding, partial last item)
+    if (!ahead.length) return sign > 0 ? hi : lo;
+
+    // 1) furthest snap point within one page, so nothing is skipped
+    const limit = now + sign * page;
+    const within = ahead.filter((p) => (sign > 0 ? p <= limit : p >= limit));
+    if (within.length) return sign > 0 ? within[within.length - 1] : within[0];
+
+    // 2) item bigger than a page: nearest one beyond it
+    return sign > 0 ? ahead[0] : ahead[ahead.length - 1];
+  }
+
+  // ---------- Pending target (rapid clicks during smooth scroll) ----------
+
+  const pending = new WeakMap(); // scroller -> { axis, pos }
+  const watched = new WeakSet();
+
+  function watch(t) {
+    if (watched.has(t)) return;
+    watched.add(t);
+
+    const clear = () => pending.delete(t);
+    // User takes over -> forget our target
+    for (const type of ["wheel", "touchstart", "pointerdown", "keydown"]) {
+      t.addEventListener(type, clear, { passive: true });
+    }
+    if ("onscrollend" in window) {
+      t.addEventListener("scrollend", clear);
+    } else {
+      let id;
+      t.addEventListener(
+        "scroll",
+        () => {
+          clearTimeout(id);
+          id = setTimeout(clear, 150);
+        },
+        { passive: true }
+      );
+    }
+  }
+
+  // ---------- Focus ----------
+  // The CSS hides buttons (visibility) at the ends. A focused button that
+  // disappears would drop keyboard focus to <body>; hand it over instead.
+
+  const isHidden = (el) => el.checkVisibility?.({ visibilityProperty: true }) === false;
+
+  function keepFocus(t, invoker) {
+    t.addEventListener(
+      "scrollend",
+      () =>
+        requestAnimationFrame(() => {
+          if (!invoker.isConnected || !isHidden(invoker)) return;
+          const id = CSS.escape(t.id);
+          const other = [...t.getRootNode().querySelectorAll(`[commandfor="${id}"]`)].find(
+            (b) => b !== invoker && !isHidden(b)
+          );
+          (other ?? t).focus?.({ preventScroll: true });
+        }),
+      { once: true }
+    );
+  }
+
+  // ---------- Core ----------
+
+  function run(t, command, invoker) {
+    const spec = COMMANDS[command];
+    if (!spec || !(t instanceof HTMLElement)) return;
+
+    const tcs = getComputedStyle(t);
+    const layout = layoutOf(tcs);
+    const { axis, sign } = resolve(spec, layout);
+    const x = axis === "x";
+
+    const page = x ? t.clientWidth : t.clientHeight;
+    if (page === 0) return; // display: none / not laid out
+
+    const [lo, hi] = scrollRange(t, axis, layout);
+    const p = pending.get(t);
+    const now = p && p.axis === axis ? p.pos : x ? t.scrollLeft : t.scrollTop;
+
+    const target = snapsOn(tcs, axis, layout)
+      ? nextSnap(snapPositions(t, axis, layout, tcs), now, sign, page, lo, hi)
+      : clamp(now + sign * Math.max(1, Math.round(page * PAGE_RATIO)), lo, hi);
+
+    if (Math.abs(target - now) < TOLERANCE) return; // already at the end
+
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    watch(t);
+    pending.set(t, { axis, pos: target });
+    t.scrollTo({ [x ? "left" : "top"]: target, behavior: reduce ? "instant" : "smooth" });
+
+    if (invoker && document.activeElement === invoker && t.id) keepFocus(t, invoker);
+  }
+
+  // ---------- Wiring ----------
+
+  function attach(root = document) {
+    // Capture phase: independent of bubbling, works for elements added later,
+    // and needs no target lookup at connect time.
+    root.addEventListener(
+      "command",
+      (e) => run(e.composedPath()[0], e.command, e.source),
+      true
+    );
+
+    if (!("CommandEvent" in window)) {
+      // Fallback for browsers without Invoker Commands
+      root.addEventListener("click", (e) => {
+        const btn = e.target.closest?.("button[commandfor][command^='--page-']");
+        if (!btn || btn.disabled) return;
+        const t = btn.getRootNode().getElementById?.(btn.getAttribute("commandfor"));
+        if (t) run(t, btn.getAttribute("command"), btn);
+      });
+    }
+  }
+
+  attach(document);
+  window.ScrollInvoker = { attach };
+})();
+
+</script>
     </body>
 </html>
