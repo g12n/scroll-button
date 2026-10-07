@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scroll-driven animation</title>
+        <link rel="stylesheet" href="base.css">
+        <link rel="stylesheet" href="cards.css">
+    </head>
+    <body>
+
+        <h1>Scroll-driven animation</h1>
+        <p>Use scroll-driven animations to show and hide the buttons.</p>
+
+        <section aria-labelledby="horizontal-always">
+            <h2 id="horizontal-always">Always horizontal scrolling cards</h2>
+            <p>This container should be scrolling horizontally on every device.</p>
+            <ul class="cards horizontal" id="cards">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+            </ul>
+            <button commandfor="cards" command="--page-left">prev</button>
+            <button commandfor="cards" command="--page-right">next</button>
+        </section>
+
+        <style>
+        @supports (animation-timeline: scroll()) {
+
+            /* The buttons are siblings of the scroller, not descendants,
+               so scroll() can't reach it. Name the scroller's timeline and
+               lift its scope to the common ancestor. */
+            section {
+                timeline-scope: --cards;
+            }
+
+            .cards.horizontal {
+                scroll-timeline: --cards inline;
+            }
+
+            /* Default: hidden. The animation overrides this while the
+               timeline is active, so a non-scrollable container keeps
+               both buttons hidden. */
+            button[command="--page-left"],
+            button[command="--page-right"] {
+                opacity: 0;
+                visibility: hidden;
+                animation-fill-mode: both;
+                animation-timing-function: linear;
+            }
+
+            button[command="--page-left"] {
+                animation-name: appear;
+                animation-timeline: --cards;
+                animation-range: 0 2rem;
+            }
+
+            button[command="--page-right"] {
+                animation-name: disappear;
+                animation-timeline: --cards;
+                animation-range: calc(100% - 2rem) 100%;
+            }
+
+            @keyframes appear {
+                from { opacity: 0; visibility: hidden; }
+                to   { opacity: 1; visibility: visible; }
+            }
+
+            @keyframes disappear {
+                from { opacity: 1; visibility: visible; }
+                to   { opacity: 0; visibility: hidden; }
+            }
+        }
+        </style>
+    </body>
+</html>
